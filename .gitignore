@@ -13,3 +13,4 @@ ind.cora.graph
 ind.cora.test.index
 *.pt
 *.txt
+/bin
