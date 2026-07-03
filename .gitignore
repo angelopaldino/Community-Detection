@@ -14,3 +14,4 @@ ind.cora.test.index
 *.pt
 *.txt
 /bin
+*.gguf
