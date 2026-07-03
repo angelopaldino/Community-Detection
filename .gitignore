@@ -1,0 +1,16 @@
+*.pyd
+*.pyc
+*.py
+/.venv
+/data
+*.ally
+ind.cora.y
+ind.cora.x
+ind.cora.tx
+ind.cora.ty
+ind.cora.allx
+ind.cora.ally
+ind.cora.graph
+ind.cora.test.index
+*.pt
+*.txt
