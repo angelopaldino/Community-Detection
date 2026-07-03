@@ -1,6 +1,5 @@
 *.pyd
 *.pyc
-*.py
 /.venv
 /data
 *.ally
