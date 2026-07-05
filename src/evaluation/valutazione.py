@@ -27,15 +27,21 @@ def valuta_partizione(nome, partizione, etichette, grafo):
     return {"nome": nome, "n_community": n_com, "nmi": nmi, "ari": ari, "modularity": mod}
 
 
-
+part_infomap = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\baseline_infomap.npy")
 part_louvain = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\baseline_louvain_C0.npy")
 part_perplexity = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_perplexity_finale.npy")
+part_aggregazione_Finale = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_finale.npy")
+part_aggregazione_intermedia = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_passata_2.npy")
+
 
 print("="*80)
 print("CONFRONTO PARTIZIONI (vs ground-truth = categorie vere)")
 print("="*80)
+part_infomap = valuta_partizione("Infomap", part_infomap, etichette, grafo)
 r_louvain = valuta_partizione("Louvain", part_louvain, etichette, grafo)
 r_perplexity = valuta_partizione("Perplexity (LLM)", part_perplexity, etichette, grafo)
+r_aggregazione_Finale = valuta_partizione("Aggregazione Finale", part_aggregazione_Finale, etichette, grafo)
+r_aggregazione_intermedia = valuta_partizione("Aggregazione Intermedia", part_aggregazione_intermedia, etichette, grafo)
 print("="*80)
 
 # salvo il confronto
