@@ -34,6 +34,25 @@ part_aggregazione_Finale = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Communi
 part_aggregazione_intermedia = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_passata_2.npy")
 partizione_senzaAgg = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_migliore.npy")
 partizione_refined = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_refined_finale.npy")
+partizione_cd = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_migliore2.npy")
+partizione1 = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_passata_1.npy")
+partizione2 = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_passata_2.npy")
+partizione1_1 = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_passata_1 (1).npy")
+partizione2_1 = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_passata_2 (1).npy")
+partizione3 = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_passata_3.npy")
+
+
+
+
+'''
+experiments/results/partizione_aggregata_passata_1.npy
+ experiments/results/partizione_aggregata_passata_2.npy
+   experiments/results/partizione_aggregata_passata_1 (1).npy
+     experiments/results/partizione_aggregata_passata_2 (1).npy
+       experiments/results/partizione_aggregata_passata_3.npy
+
+'''
+
 
 
 print("="*80)
@@ -46,11 +65,17 @@ r_aggregazione_Finale = valuta_partizione("Aggregazione Finale", part_aggregazio
 r_aggregazione_intermedia = valuta_partizione("Aggregazione Intermedia", part_aggregazione_intermedia, etichette, grafo)
 r_aggregazione_senzaAgg = valuta_partizione("Senza Agg", partizione_senzaAgg, etichette, grafo)
 r_aggregazione_refined = valuta_partizione("Partizione refined", partizione_refined,etichette,grafo)
+r_part2c = valuta_partizione("Partizione CD", partizione_cd, etichette, grafo)
+r_part1_1 = valuta_partizione("Partizione 1 (1)", partizione1_1, etichette, grafo)
+r_part2_1 = valuta_partizione("Partizione 2 (1)", partizione2_1, etichette, grafo)
+r_part3 = valuta_partizione("Partizione 3", partizione3, etichette, grafo)
+r_part1 = valuta_partizione("Partizione 1", partizione1, etichette, grafo)
+r_part2 = valuta_partizione("Partizione 2", partizione2, etichette, grafo)
 
 print("="*80)
 
 # salvo il confronto
 import json
 with open("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\confronto_metriche.json", "w") as f:
-    json.dump({"louvain": r_louvain, "perplexity": r_perplexity, "aggregazione_finale": r_aggregazione_Finale, "aggregazione_intermedia": r_aggregazione_intermedia, "senzaagg": r_aggregazione_senzaAgg, "refined": r_aggregazione_refined}, f, indent=2)
+    json.dump({"louvain": r_louvain, "perplexity": r_perplexity, "aggregazione_finale": r_aggregazione_Finale, "aggregazione_intermedia": r_aggregazione_intermedia, "senzaagg": r_aggregazione_senzaAgg, "refined": r_aggregazione_refined, "part2c": r_part2c, "part1_1": r_part1_1, "part2_1": r_part2_1, "part3": r_part3,"part1": r_part1,"part2": r_part2}, f, indent=2)
 print("Confronto salvato in C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\confronto_metriche.json")
