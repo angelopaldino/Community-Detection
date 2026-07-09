@@ -2,6 +2,7 @@
 *.pyc
 /.venv
 /data
+*.md
 *.ally
 ind.cora.y
 ind.cora.x
