@@ -40,6 +40,7 @@ partizione2 = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection 
 partizione1_1 = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_passata_1 (1).npy")
 partizione2_1 = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_passata_2 (1).npy")
 partizione3 = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\partizione_aggregata_passata_3.npy")
+part4 = np.load("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\part3.npy")
 
 
 
@@ -71,11 +72,12 @@ r_part2_1 = valuta_partizione("Partizione 2 (1)", partizione2_1, etichette, graf
 r_part3 = valuta_partizione("Partizione 3", partizione3, etichette, grafo)
 r_part1 = valuta_partizione("Partizione 1", partizione1, etichette, grafo)
 r_part2 = valuta_partizione("Partizione 2", partizione2, etichette, grafo)
+r_part4 = valuta_partizione("Partizione 4", part4, etichette, grafo)
 
 print("="*80)
 
 # salvo il confronto
 import json
 with open("C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\confronto_metriche.json", "w") as f:
-    json.dump({"louvain": r_louvain, "perplexity": r_perplexity, "aggregazione_finale": r_aggregazione_Finale, "aggregazione_intermedia": r_aggregazione_intermedia, "senzaagg": r_aggregazione_senzaAgg, "refined": r_aggregazione_refined, "part2c": r_part2c, "part1_1": r_part1_1, "part2_1": r_part2_1, "part3": r_part3,"part1": r_part1,"part2": r_part2}, f, indent=2)
+    json.dump({"louvain": r_louvain, "perplexity": r_perplexity, "aggregazione_finale": r_aggregazione_Finale, "aggregazione_intermedia": r_aggregazione_intermedia, "senzaagg": r_aggregazione_senzaAgg, "refined": r_aggregazione_refined, "part2c": r_part2c, "part1_1": r_part1_1, "part2_1": r_part2_1, "part3": r_part3,"part1": r_part1,"part2": r_part2,"part4": r_part4}, f, indent=2)
 print("Confronto salvato in C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\experiments\\results\\confronto_metriche.json")
