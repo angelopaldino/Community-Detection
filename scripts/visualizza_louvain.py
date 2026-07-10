@@ -36,7 +36,7 @@ NOMI_CLASSI = ["Case_Based", "Genetic_Algorithms", "Neural_Networks",
 
 def calcola_layout(G, seed=42):
     print(">> Calcolo il layout")
-    return nx.spring_layout(G, k=0.15, iterations=30, seed=seed)
+    return nx.spring_layout(G, k=0.15, iterations=700, seed=seed)
 
 
 def disegna_louvain(G, pos, partition):
