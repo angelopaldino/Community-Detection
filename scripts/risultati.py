@@ -3,9 +3,10 @@ import matplotlib.pyplot as plt
 
 # dati: alpha -> (n_com, h_sem, ppl, codelength, nmi, ari, modularity)
 dati = {
-    0.0: (278, 3.4290, 28.6817, 6.3837, 0.4136, 0.0503, 0.7309),   # InfoMap (h_sem stimato)
+    0.0: (278, 3.4477, 28.6817, 6.3837, 0.4136, 0.0503, 0.7309),   # InfoMap 
     0.3: (278, 3.4213, 27.4310, 6.4263, 0.4166, 0.0510, 0.7278),
     0.5: (276, 3.4177, 27.2733, 6.4942, 0.4177, 0.0518, 0.7209),
+    0.7: (267, 3.4131, 17.7083, 6.6528, 0.4214, 0.0529, 0.7062),
     0.9: (266, 3.3925, 17.4687, 7.1088, 0.4182, 0.0527, 0.6586),
 }
 alpha = np.array(sorted(dati))
@@ -22,10 +23,10 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5.2))
 
 # --- SX: curva di trade-off L(C) vs H_sem ---
 ax1.plot(lc, h_sem, "-", color="#bbbbbb", linewidth=1.2, zorder=1)
-colori = ["#1f4e79", "#e67e22", "#c0392b", "#27ae60"]
+colori = {0.0:"#1f4e79", 0.3:"#f39c12", 0.5:"#e67e22", 0.7:"#c0392b", 0.9:"#27ae60"}
 for i, a in enumerate(alpha):
     lbl = "InfoMap ($\\alpha$=0)" if a == 0 else f"$\\alpha$={a}"
-    ax1.scatter(lc[i], h_sem[i], s=150, c=colori[i], edgecolors="white",
+    ax1.scatter(lc[i], h_sem[i], s=160, c=colori[a], edgecolors="white",
                 linewidths=1.5, zorder=3, label=lbl)
     ax1.annotate(f"{a:g}", (lc[i], h_sem[i]), fontsize=9,
                  xytext=(8, 5), textcoords="offset points")
