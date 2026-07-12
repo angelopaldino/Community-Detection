@@ -1,6 +1,9 @@
 import numpy as np
 import networkx as nx
 import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 content = pd.read_csv(f"C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\data\\cora.content", sep="\t", header=None)
 paper_ids = content.iloc[:, 0].astype(str).values
@@ -85,4 +88,53 @@ def analisi_centralita(G, testi=None, top_k=10):
 
     return misure
 
+
+def grafico_clustering_degree(G, path):
+    gradi = dict(G.degree())
+    clustering = nx.clustering(G)
+ 
+    nodi = [n for n in G.nodes() if gradi[n] > 0]
+    x = np.array([gradi[n] for n in nodi])
+    y = np.array([clustering[n] for n in nodi])
+ 
+    # media del clustering per ciascun valore di grado
+    gradi_unici = np.array(sorted(set(x)))
+    media_y = np.array([y[x == g].mean() for g in gradi_unici])
+ 
+    plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10})
+    fig, ax = plt.subplots(figsize=(9, 6))
+ 
+    # punti: un nodo ciascuno (jitter orizzontale per separare i gradi bassi)
+    rng = np.random.default_rng(0)
+    x_jit = x * (1 + rng.normal(0, 0.03, len(x)))
+    ax.scatter(x_jit, y, s=10, c="#3b5bdb", alpha=0.35, linewidths=0,
+               label="nodo singolo")
+ 
+    # media per grado
+    ax.plot(gradi_unici, media_y, "-", color="#c0392b", linewidth=1.8,
+            marker="o", markersize=3, label="media per grado")
+ 
+    ax.set_xscale("log")
+    ax.set_xlabel("Grado (scala logaritmica)", fontsize=11, labelpad=8)
+    ax.set_ylabel("Clustering coefficient locale", fontsize=11, labelpad=8)
+    ax.set_title("Clustering locale in funzione del grado",
+                 fontsize=13, fontweight="bold", pad=12)
+    ax.legend(fontsize=9.5, framealpha=0.95, edgecolor="#cccccc")
+    ax.grid(True, which="both", color="#ececec", linewidth=0.6)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+ 
+    plt.tight_layout()
+    plt.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close()
+    print(f">> salvato: {path}")
+ 
+    # stampo anche i due indici aggregati, per il commento
+    print(f"clustering medio (media dei locali): {nx.average_clustering(G):.4f}")
+    print(f"transitivita' (globale):             {nx.transitivity(G):.4f}")
+
+
+
+
 risultato = analisi_centralita(G, testi=tape["T"].values, top_k=10)
+grafico = grafico_clustering_degree(G, path="clustering_degree.png")
