@@ -132,6 +132,10 @@ def grafico_clustering_degree(G, path):
     # stampo anche i due indici aggregati, per il commento
     print(f"clustering medio (media dei locali): {nx.average_clustering(G):.4f}")
     print(f"transitivita' (globale):             {nx.transitivity(G):.4f}")
+    gradi = dict(G.degree())
+    clustering = nx.clustering(G)
+    print(f"nodo 163: grado={gradi[163]}, clustering={clustering[163]:.4f}")
+    print(f"grado massimo nel grafo: {max(gradi.values())} (nodo {max(gradi, key=gradi.get)})")
 
 
 
