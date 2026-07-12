@@ -59,6 +59,7 @@ def analisi_centralita(G, testi=None, top_k=10):
         "eigenvector": eigenvector,
         "katz": katz,
         "pagerank": pagerank,
+        
     }
 
     # statistiche di rete (network-level)
@@ -69,6 +70,7 @@ def analisi_centralita(G, testi=None, top_k=10):
     print(f"Componenti connesse: {len(componenti)}")
     print(f"Nodi nella componente gigante: {len(max(componenti, key=len))}")
     print(f"Coefficiente di clustering medio: {nx.average_clustering(G):.4f}\n")
+    print("transitivita (globale):", nx.transitivity(G))
 
     # top-k nodi per ciascuna misura
     for nome, valori in misure.items():
