@@ -5,88 +5,83 @@ import powerlaw
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import sys
+import os
+from src.data_loader.loaders import carica_cora
+
+
+
+
+
 
 
 """
-Verifica se la distribuzione dei gradi di Cora segua una power law, secondo la
-metodologia di Clauset, Shalizi & Newman (2009):
-  1. stima dell'esponente alpha e della soglia x_min via massima verosimiglianza;
-  2. bonta' di adattamento con test di Kolmogorov-Smirnov (p-value via bootstrap);
-  3. confronto con distribuzioni alternative (log-normale, esponenziale) via
-     likelihood ratio di Vuong.
-
-Una power law NON si stabilisce dal solo grafico log-log: serve il confronto
-con le alternative. Spesso, su grafi piccoli, il risultato e' inconcludente.
+Grafico della distribuzione dei gradi con fit power law, usando le funzioni
+native del pacchetto `powerlaw`. Si usa la CCDF (complementary cumulative
+distribution function), lo standard per le code pesanti: e' meno rumorosa
+della pdf e i fit vengono tracciati automaticamente a partire da x_min.
 """
-
-content = pd.read_csv(f"C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\data\\cora.content", sep="\t", header=None)
-paper_ids = content.iloc[:, 0].astype(str).values
-n_nodi = len(paper_ids)
-id_to_index = {pid: i for i, pid in enumerate(paper_ids)}
-
-cites = pd.read_csv(f"C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\data\\cora.cites", sep="\t", header=None, names=["cited", "citing"], dtype=str)
-G = nx.Graph()
-G.add_nodes_from(range(n_nodi))
-for cited, citing in zip(cites["cited"], cites["citing"]):
-    if cited in id_to_index and citing in id_to_index:
-        G.add_edge(id_to_index[citing], id_to_index[cited])
-
-tape = pd.read_csv(f"C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\data\\processed\\combined.csv").sort_values("id").reset_index(drop=True)
-etichette = tape["label"].values.astype(int)
-print(f"Nodi: {n_nodi}, Archi: {G.number_of_edges()}, Classi: {len(set(etichette))}")
+import numpy as np
+import networkx as nx
+import powerlaw
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 
-
-def analizza_powerlaw(G, path_fig="powerlaw_gradi.png"):
+def grafico_gradi(G, path):
     gradi = np.array([d for _, d in G.degree() if d > 0])
-    print(f"nodi con grado > 0: {len(gradi)}")
-    print(f"grado: min={gradi.min()}, max={gradi.max()}, medio={gradi.mean():.2f}")
-
-    # fit power law (discreta, perche' i gradi sono interi)
     fit = powerlaw.Fit(gradi, discrete=True, verbose=False)
-    print(f"\n--- Fit power law ---")
-    print(f"alpha (esponente) : {fit.power_law.alpha:.3f}")
-    print(f"x_min             : {fit.power_law.xmin}")
-    print(f"sigma (err. alpha): {fit.power_law.sigma:.3f}")
+    xmin = fit.power_law.xmin
+    alpha = fit.power_law.alpha
 
-    # confronto con alternative: R>0 favorisce la power law, R<0 l'alternativa;
-    # p indica se la differenza e' significativa
-    print(f"\n--- Confronto con distribuzioni alternative ---")
-    for alt in ["lognormal", "exponential", "truncated_power_law"]:
-        R, p = fit.distribution_compare("power_law", alt,
-                                        normalized_ratio=True)
-        verso = "power law" if R > 0 else alt
-        signif = "significativo" if p < 0.05 else "NON significativo"
-        print(f"power_law vs {alt:20}: R={R:+.3f}, p={p:.3f} "
-              f"-> favorisce {verso} ({signif})")
-
-    # figura: distribuzione empirica + fit, in scala log-log
+    plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 11})
     fig, ax = plt.subplots(figsize=(8, 6))
-    fit.plot_pdf(ax=ax, color="#1f4e79", marker="o", linewidth=0,
-                 markersize=5, label="dati empirici")
-    fit.power_law.plot_pdf(ax=ax, color="#c0392b", linestyle="--",
-                           linewidth=2, label=f"power law ($\\alpha$={fit.power_law.alpha:.2f})")
-    fit.lognormal.plot_pdf(ax=ax, color="#27ae60", linestyle=":",
-                           linewidth=2, label="log-normale")
-    ax.set_xlabel("Grado $k$", fontsize=11)
-    ax.set_ylabel("$p(k)$", fontsize=11)
-    ax.set_title("Distribuzione dei gradi di Cora (scala log-log)",
-                 fontsize=13, fontweight="bold")
-    ax.legend(fontsize=10)
+
+    # --- MODIFICA PRINCIPALE: Plottiamo TUTTI i dati empirici ---
+    # Passando direttamente l'array 'gradi' a powerlaw.plot_ccdf, 
+    # mostriamo l'intera distribuzione senza il cut-off di xmin.
+    powerlaw.plot_ccdf(gradi, ax=ax, color="#1f4e79", linewidth=0, marker="o",
+                       markersize=4.5, label="dati empirici")
+    
+    # I fit teorici vengono mostrati a partire da xmin (comportamento corretto)
+    fit.power_law.plot_ccdf(ax=ax, color="#c0392b", linestyle="--", linewidth=2.2,
+                            label=f"power law ($\\alpha$={alpha:.2f})")
+    fit.lognormal.plot_ccdf(ax=ax, color="#27ae60", linestyle=":", linewidth=2.2,
+                            label="log-normale")
+
+    # Evidenzio x_min come soglia verticale
+    ax.axvline(xmin, color="#999999", linewidth=1.2, alpha=0.7, linestyle="-.")
+    
+    # Adatto la posizione del testo per xmin in base ai nuovi assi completi
+    ax.text(xmin * 1.1, ax.get_ylim()[0] * 10, f"$x_{{min}}={xmin:.0f}$",
+            fontsize=9.5, color="#666666", rotation=90, va="bottom")
+
+    ax.set_xlabel("Grado  $k$", fontsize=12, labelpad=8)
+    ax.set_ylabel("$P(K \\geq k)$", fontsize=12, labelpad=8)
+    ax.set_title("Distribuzione cumulata dei gradi",
+                 fontsize=13, fontweight="bold", pad=12)
+    ax.legend(fontsize=10.5, framealpha=0.95)
+    ax.grid(True, which="both", alpha=0.2)
+
     plt.tight_layout()
-    plt.savefig(path_fig, dpi=200, bbox_inches="tight")
+    plt.savefig(path, dpi=200, bbox_inches="tight")
     plt.close()
-    print(f"\nfigura salvata: {path_fig}")
-    return fit
+    print(f"salvato: {path}  (alpha={alpha:.3f}, xmin={xmin:.0f})")
 
 
 if __name__ == "__main__":
-    import os, sys
-    RADICE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    sys.path.append(RADICE)
-    from src.data_loader.loaders import carica_cora
-    OUT = os.path.join(RADICE, "experiments", "visualizzazione")
-    os.makedirs(OUT, exist_ok=True)
-    dati = carica_cora()
-    analizza_powerlaw(dati["grafo"], os.path.join(OUT, "powerlaw_gradi.png"))
+    import pandas as pd
+    BASE = r"C:\\Users\\angel\\OneDrive\\Desktop\\Community Detection LLM\\data"  
+    content = pd.read_csv(f"{BASE}/cora.content", sep="\t", header=None)
+    pid = content.iloc[:, 0].astype(str).values
+    idx = {p: i for i, p in enumerate(pid)}
+    cites = pd.read_csv(f"{BASE}/cora.cites", sep="\t", header=None,
+                        names=["cited", "citing"], dtype=str)
+    G = nx.Graph()
+    G.add_nodes_from(range(len(pid)))
+    for a, b in zip(cites["cited"], cites["citing"]):
+        if a in idx and b in idx:
+            G.add_edge(idx[b], idx[a])
+    grafico_gradi(G, "powerlaw_gradi.png")
 
