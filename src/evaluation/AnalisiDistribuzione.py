@@ -63,6 +63,9 @@ def grafico_gradi(G, path):
                  fontsize=13, fontweight="bold", pad=12)
     ax.legend(fontsize=10.5, framealpha=0.95)
     ax.grid(True, which="both", alpha=0.2)
+    # Confronto tra Power Law e Log-Normale
+    R, p_value = fit.distribution_compare('power_law', 'lognormal', normalized_ratio=True)
+    print(f"Likelihood Ratio (R): {R:.4f}, p-value: {p_value:.4f}")
 
     plt.tight_layout()
     plt.savefig(path, dpi=200, bbox_inches="tight")
